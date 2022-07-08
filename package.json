@@ -1,0 +1,26 @@
+{
+  "name": "uniswapv2-lp",
+  "version": "1.0.0",
+  "description": "nft liquidity pool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luanpontolio/uniswapv2-lp.git"
+  },
+  "keywords": [
+    "nft"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luanpontolio/uniswapv2-lp/issues"
+  },
+  "homepage": "https://github.com/luanpontolio/uniswapv2-lp#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.1",
+    "hardhat": "^2.10.0"
+  }
+}
