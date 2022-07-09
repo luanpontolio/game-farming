@@ -5,10 +5,10 @@ import { initialState, reducers } from '../reducers/WalletReducer'
 import { AppContext } from './context/AppContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [globalState, dispatch] = useReducer(reducers, initialState);
+  const [state, dispatch] = useReducer(reducers, initialState);
 
   return (
-    <AppContext.Provider value={[globalState, dispatch]}>
+    <AppContext.Provider value={{ state, dispatch }}>
       <Component {...pageProps} />
     </AppContext.Provider>
   )

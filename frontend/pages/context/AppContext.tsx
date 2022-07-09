@@ -1,6 +1,11 @@
 import { createContext, useContext } from 'react';
 
-export const AppContext = createContext(null);
+interface AppContextProps {
+  state: any;
+  dispatch: any;
+}
+
+export const AppContext = createContext({} as AppContextProps);
 AppContext.displayName = 'AppContext';
 
 export const useAppContext = () => useContext(AppContext);

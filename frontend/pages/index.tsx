@@ -1,5 +1,4 @@
 import type { NextPage } from 'next'
-import { useAppContext } from './context/AppContext'
 import Head from 'next/head'
 import Image from 'next/image'
 import Main from '../components/Main/Main'
@@ -17,9 +16,6 @@ declare global {
 }
 
 const Home: NextPage = () => {
-  const [state, dispatch] = useAppContext();
-  const { account, contract, network, wrongNetwork } = state;
-
   return (
     <div className={styles.container}>
       <Head>
@@ -29,8 +25,6 @@ const Home: NextPage = () => {
       </Head>
 
       <Main />
-      <main className={styles.main}>
-      </main>
 
       <footer className={styles.footer}>
         <a

@@ -26,7 +26,7 @@
     "@types/react-dom": "18.0.6",
     "eslint": "8.19.0",
     "eslint-config-next": "12.2.1",
-    "typescript": "4.7.4"
+    "typescript": "^4.7.4"
   },
   "resolutions": {
     "@0x/utils": "https://github.com/ProjectOpensea/0x-tools/raw/provider-patch/utils/0x-utils-6.5.0.tgz"
