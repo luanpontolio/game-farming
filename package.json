@@ -32,8 +32,7 @@
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
-    "@nomicfoundation/hardhat-toolbox": "^1.0.1",
-    "@openzeppelin/contracts": "^4.7.0",
+    "@openzeppelin/contracts": "^4.5.0",
     "chai": "^4.3.6",
     "dotenv": "^8.2.0",
     "eslint": "^8.14.0",
@@ -43,6 +42,7 @@
     "hardhat-deploy": "^0.11.4",
     "hardhat-etherscan": "^1.0.1",
     "hardhat-typechain": "^0.3.5",
+    "merkletreejs": "^0.2.32",
     "solidity-coverage": "^0.7.21"
   }
 }
