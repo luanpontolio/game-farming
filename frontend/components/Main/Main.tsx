@@ -1,3 +1,4 @@
+import Container from '@mui/material/Container';
 import useWallet from '../../hooks/useWallet';
 import { useAppContext } from '../../pages/context/AppContext'
 import styles from '../../styles/Home.module.css'
@@ -9,13 +10,13 @@ const Main = () => {
   const { account } = state;
 
   return (
-    <div>
+    <Container>
       <ConnectWallet
         account={account}
         onConnect={connect}
         onDisconnect={disconnect}
       />
-    </div>
+    </Container>
   )
 }
 
