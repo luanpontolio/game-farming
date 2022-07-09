@@ -1,14 +1,12 @@
-import "@nomiclabs/hardhat-waffle";
 require('dotenv').config();
 
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import 'hardhat-deploy';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
-import 'hardhat-deploy';
 import 'hardhat-typechain';
 import 'solidity-coverage';
+import { HardhatUserConfig, NetworkUserConfig } from 'hardhat/types';
 import { task } from 'hardhat/config';
 
 // .env
@@ -56,7 +54,7 @@ const config: HardhatUserConfig = {
     rinkeby: {
       chainId: Number(CHAIN_ID),
       url: ALCHEMY_PROJECT_URL,
-      accounts: [PRIVATE_KEY || '', SECOND_PRIVATE_KEY || ''],
+      accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
       gas: Number(GAS_LIMIT),
       gasPrice: Number(GAS_PRICE) * 10000, // gwei unit
       timeout: 600 * 1000, // milliseconds
@@ -65,7 +63,7 @@ const config: HardhatUserConfig = {
       throwOnCallFailures: true,
       throwOnTransactionFailures: true,
       loggingEnabled: true,
-    },
+    } as NetworkUserConfig,
     hardhat: {
       chainId: 1337,
       accounts: {
@@ -78,6 +76,6 @@ const config: HardhatUserConfig = {
       gasPrice: 5000000000,
     },
   },
-};
+} as HardhatUserConfig;
 
 export default config;

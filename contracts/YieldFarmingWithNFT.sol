@@ -4,7 +4,8 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 // Inheritance
@@ -12,7 +13,7 @@ import "./RewardsDistributionRecipient.sol";
 import "./Pausable.sol";
 
 // this contract is based on synthetix StakeRewards: https://docs.synthetix.io/contracts/source/contracts/stakingrewards
-contract YieldFarmingWithNFT is RewardsDistributionRecipient, ReentrancyGuard, Pausable {
+contract YieldFarmingWithNFT is RewardsDistributionRecipient, ERC1155Holder, ReentrancyGuard, Pausable {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -65,6 +66,8 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ReentrancyGuard, P
     if (_totalSupply == 0) {
       return rewardPerTokenStored;
     }
+
+
     return
       rewardPerTokenStored.add(
           lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)
@@ -84,9 +87,9 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ReentrancyGuard, P
   function stake(uint256 tokenId, uint256 amount, bytes memory data) external nonReentrant notPaused updateReward(msg.sender) {
       require(tokenOwners[tokenId] == address(0), "Not empty");
       tokenOwners[tokenId] = address(msg.sender);
-      _totalSupply = _totalSupply.add(_one_ether);
-      _balances[msg.sender] = _balances[msg.sender].add(_one_ether);
-      
+      _totalSupply = _totalSupply + _one_ether;
+      _balances[msg.sender] = _balances[msg.sender] + _one_ether;
+
       stakingToken.safeTransferFrom(msg.sender, address(this), tokenId, amount, data);
 
       emit Staked(msg.sender, tokenId);
@@ -94,8 +97,8 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ReentrancyGuard, P
 
   function withdraw(uint256 tokenId, uint256 amount, bytes memory data) public nonReentrant updateReward(msg.sender) {
       require(tokenOwners[tokenId] == address(msg.sender), "Invalid Owner");
-      _totalSupply = _totalSupply.sub(1 ether);
-      _balances[msg.sender] = _balances[msg.sender].sub(1 ether);
+      _totalSupply = _totalSupply - _one_ether;
+      _balances[msg.sender] = _balances[msg.sender] - _one_ether;
 
       delete tokenOwners[tokenId];
       stakingToken.setApprovalForAll(address(msg.sender), true);
@@ -168,9 +171,9 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ReentrancyGuard, P
   /* ========== EVENTS ========== */
 
   event RewardAdded(uint256 reward);
-  event Staked(address indexed user, uint256 amount);
-  event Withdrawn(address indexed user, uint256 amount);
+  event Staked(address indexed user, uint256 tokenId);
+  event Withdrawn(address indexed user, uint256 tokenId);
   event RewardPaid(address indexed user, uint256 reward);
   event RewardsDurationUpdated(uint256 newDuration);
-  event Recovered(address token, uint256 amount);
+  event Recovered(address token, uint256 tokenId);
 }
