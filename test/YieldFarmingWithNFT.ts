@@ -1,4 +1,4 @@
-import hardhat, { ethers, network } from 'hardhat';
+import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
@@ -12,8 +12,17 @@ import {
   checkStakeEvent
 } from './utils/CheckEvents';
 
+const fastForward = async (num: number) => {
+  await ethers.provider.send('evm_increaseTime', [86400]);
+  await ethers.provider.send('evm_mine', []);
+
+  return true;
+}
+
 describe('YieldFarmingWithNFT', async function () {
   let stakingToken: any, rewardsToken: any, yieldFarming: any, owner: any, accounts: any, accountOne: any, accountTwo: any;
+
+  const ZERO = BigNumber.from(parseEther('0')).toString();
 
   beforeEach(async () => {
     [owner, ...accounts] = await ethers.getSigners();
@@ -105,8 +114,7 @@ describe('YieldFarmingWithNFT', async function () {
 			await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
 
       // Forward 1 day
-			await ethers.provider.send('evm_increaseTime', [86400]);
-      await ethers.provider.send('evm_mine', []);
+			await fastForward(86400);
 
 			const rewardPerToken = await yieldFarming.rewardPerToken();
       expect(rewardPerToken.toString() > BigNumber.from('0').toString()).to.be.true;
@@ -140,7 +148,7 @@ describe('YieldFarmingWithNFT', async function () {
       expect(totalSupplyAfter.toString() > totalSupplyBefore.toString()).to.be.true;
 		});
 
-		it('cannot stake twice the same id', async () => {
+		it('cannot staked twice the same id', async () => {
 			await stakingToken.setApprovalForAll(yieldFarming.address, true);
 			await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
 
@@ -151,5 +159,47 @@ describe('YieldFarmingWithNFT', async function () {
         expect(error.message).to.match(/Not empty/);
       }
 		});
+  });
+
+  describe.only('earned', async function() {
+    it('should be 0 when not staking', async function (){
+      expect((await yieldFarming.earned(owner.address)).toString()).to.be.equal(ZERO);
+    });
+
+    it('should be > 0 when staking', async function(){
+      await stakingToken.setApprovalForAll(yieldFarming.address, true);
+			await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
+
+      const rewardValue = BigNumber.from(parseEther("50")).toString();
+      await rewardsToken.approve(yieldFarming.address, rewardValue);
+			await rewardsToken.transfer(yieldFarming.address, rewardValue);
+      await yieldFarming.connect(accountOne).notifyRewardAmount(rewardValue);
+
+      // Forward 1 day
+			await fastForward(86400);
+
+      const earned = await yieldFarming.earned(owner.address);
+
+      expect(earned.toString() > ZERO).to.be.true;
+    });
+
+    it('rewardRate should increase if new rewards come before DURATION ends', async function(){
+      const totalDistrubution = BigNumber.from(parseEther('50')).toString();
+
+      await rewardsToken.approve(yieldFarming.address, totalDistrubution);
+			await rewardsToken.transfer(yieldFarming.address, totalDistrubution);
+      await yieldFarming.connect(accountOne).notifyRewardAmount(totalDistrubution);
+
+      const rewardRateInitial = await yieldFarming.rewardRate();
+
+      await rewardsToken.approve(yieldFarming.address, totalDistrubution);
+			await rewardsToken.transfer(yieldFarming.address, totalDistrubution);
+      await yieldFarming.connect(accountOne).notifyRewardAmount(totalDistrubution);
+
+      const rewardRateLater = await yieldFarming.rewardRate();
+
+      expect(rewardRateInitial.toString() > ZERO).to.be.true;
+      expect(rewardRateLater.toNumber() > rewardRateInitial.toNumber()).to.be.true;
+    })
   });
 });
