@@ -5,6 +5,7 @@ import { parseEther } from 'ethers/lib/utils';
 import {
   erc1155ContractLabelString,
   erc20ContractLabelString,
+  deployTokenWithArgs,
   deployToken,
   deployYieldFarming
 } from './utils/setup';
@@ -30,7 +31,12 @@ describe('YieldFarmingWithNFT', async function () {
     accountTwo = accounts[1];
 
     stakingToken = await deployToken(erc1155ContractLabelString);
-    rewardsToken = await deployToken(erc20ContractLabelString);
+    rewardsToken = await deployTokenWithArgs(
+      erc20ContractLabelString,
+      'Token',
+      'TKN',
+      BigNumber.from(parseEther('1000')).toString()
+    );
 
     await rewardsToken.approve(accountOne.address, BigNumber.from(parseEther('100')).toString());
     await rewardsToken.approve(accountTwo.address, BigNumber.from(parseEther('100')).toString());
@@ -161,7 +167,7 @@ describe('YieldFarmingWithNFT', async function () {
 		});
   });
 
-  describe.only('earned', async function() {
+  describe('earned', async function() {
     it('should be 0 when not staking', async function (){
       expect((await yieldFarming.earned(owner.address)).toString()).to.be.equal(ZERO);
     });
