@@ -70,7 +70,7 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ERC1155Holder, Ree
 
     return
       rewardPerTokenStored.add(
-          lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)
+        lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)
       );
   }
 
@@ -85,75 +85,75 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ERC1155Holder, Ree
   /* ========== MUTATIVE FUNCTIONS ========== */
 
   function stake(uint256 tokenId, uint256 amount, bytes memory data) external nonReentrant notPaused updateReward(msg.sender) {
-      require(tokenOwners[tokenId] == address(0), "Not empty");
-      tokenOwners[tokenId] = address(msg.sender);
-      _totalSupply = _totalSupply + _one_ether;
-      _balances[msg.sender] = _balances[msg.sender] + _one_ether;
+    require(tokenOwners[tokenId] == address(0), "Not empty");
+    tokenOwners[tokenId] = address(msg.sender);
+    _totalSupply = _totalSupply + _one_ether;
+    _balances[msg.sender] = _balances[msg.sender] + _one_ether;
 
-      stakingToken.safeTransferFrom(msg.sender, address(this), tokenId, amount, data);
+    stakingToken.safeTransferFrom(msg.sender, address(this), tokenId, amount, data);
 
-      emit Staked(msg.sender, tokenId);
+    emit Staked(msg.sender, tokenId);
   }
 
   function withdraw(uint256 tokenId, uint256 amount, bytes memory data) public nonReentrant updateReward(msg.sender) {
-      require(tokenOwners[tokenId] == address(msg.sender), "Invalid Owner");
-      _totalSupply = _totalSupply - _one_ether;
-      _balances[msg.sender] = _balances[msg.sender] - _one_ether;
+    require(tokenOwners[tokenId] == address(msg.sender), "Invalid Owner");
+    _totalSupply = _totalSupply - _one_ether;
+    _balances[msg.sender] = _balances[msg.sender] - _one_ether;
 
-      delete tokenOwners[tokenId];
-      stakingToken.setApprovalForAll(address(msg.sender), true);
-      stakingToken.safeTransferFrom(msg.sender, address(this), tokenId, amount, data);
+    delete tokenOwners[tokenId];
+    stakingToken.setApprovalForAll(address(msg.sender), true);
+    stakingToken.safeTransferFrom(msg.sender, address(this), tokenId, amount, data);
 
-      emit Withdrawn(msg.sender, tokenId);
+    emit Withdrawn(msg.sender, tokenId);
   }
 
   function getReward() public nonReentrant updateReward(msg.sender) {
-      uint256 reward = rewards[msg.sender];
-      if (reward > 0) {
-          rewards[msg.sender] = 0;
-          rewardsToken.safeTransfer(msg.sender, reward);
-          emit RewardPaid(msg.sender, reward);
-      }
+    uint256 reward = rewards[msg.sender];
+    if (reward > 0) {
+        rewards[msg.sender] = 0;
+        rewardsToken.safeTransfer(msg.sender, reward);
+        emit RewardPaid(msg.sender, reward);
+    }
   }
 
   /* ========== RESTRICTED FUNCTIONS ========== */
 
   function notifyRewardAmount(uint256 reward) external onlyRewardsDistribution updateReward(address(0)) {
-      if (block.timestamp >= periodFinish) {
-          rewardRate = reward.div(rewardsDuration);
-      } else {
-          uint256 remaining = periodFinish.sub(block.timestamp);
-          uint256 leftover = remaining.mul(rewardRate);
-          rewardRate = reward.add(leftover).div(rewardsDuration);
-      }
+    if (block.timestamp >= periodFinish) {
+      rewardRate = reward.div(rewardsDuration);
+    } else {
+      uint256 remaining = periodFinish.sub(block.timestamp);
+      uint256 leftover = remaining.mul(rewardRate);
+      rewardRate = reward.add(leftover).div(rewardsDuration);
+    }
 
-      // Ensure the provided reward amount is not more than the balance in the contract.
-      // This keeps the reward rate in the right range, preventing overflows due to
-      // very high values of rewardRate in the earned and rewardsPerToken functions;
-      // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
-      uint balance = rewardsToken.balanceOf(address(this));
-      require(rewardRate <= balance.div(rewardsDuration), "Provided reward too high");
+    // Ensure the provided reward amount is not more than the balance in the contract.
+    // This keeps the reward rate in the right range, preventing overflows due to
+    // very high values of rewardRate in the earned and rewardsPerToken functions;
+    // Reward + leftover must be less than 2^256 / 10^18 to avoid overflow.
+    uint balance = rewardsToken.balanceOf(address(this));
+    require(rewardRate <= balance.div(rewardsDuration), "Provided reward too high");
 
-      lastUpdateTime = block.timestamp;
-      periodFinish = block.timestamp.add(rewardsDuration);
-      emit RewardAdded(reward);
+    lastUpdateTime = block.timestamp;
+    periodFinish = block.timestamp.add(rewardsDuration);
+    emit RewardAdded(reward);
   }
 
   // Added to support recovering LP Rewards from other systems such as BAL to be distributed to holders
   function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyOwner {
-      require(tokenAddress != address(stakingToken), "Cannot withdraw the staking token");
-      IERC20(tokenAddress).safeTransfer(owner(), tokenAmount);
-      emit Recovered(tokenAddress, tokenAmount);
+    require(tokenAddress != address(stakingToken), "Cannot withdraw the staking token");
+    IERC20(tokenAddress).safeTransfer(owner(), tokenAmount);
+    emit Recovered(tokenAddress, tokenAmount);
   }
 
   function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
-      require(
-        block.timestamp > periodFinish,
-        "Previous rewards period must be complete before changing the duration for the new period"
-      );
-      rewardsDuration = _rewardsDuration;
+    require(
+      block.timestamp > periodFinish,
+      "Previous rewards period must be complete before changing the duration for the new period"
+    );
+    rewardsDuration = _rewardsDuration;
 
-      emit RewardsDurationUpdated(rewardsDuration);
+    emit RewardsDurationUpdated(rewardsDuration);
   }
 
   /* ========== MODIFIERS ========== */
@@ -162,8 +162,8 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ERC1155Holder, Ree
     rewardPerTokenStored = rewardPerToken();
     lastUpdateTime = lastTimeRewardApplicable();
     if (account != address(0)) {
-        rewards[account] = earned(account);
-        userRewardPerTokenPaid[account] = rewardPerTokenStored;
+      rewards[account] = earned(account);
+      userRewardPerTokenPaid[account] = rewardPerTokenStored;
     }
     _;
   }
