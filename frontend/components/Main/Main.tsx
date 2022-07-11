@@ -79,17 +79,17 @@ const Main = () => {
   }
 
   useEffect(() => {
-    setReadyToEarned(!!account);
-
     if (!nftId || !account) {
       setNftId('');
       setNftData({});
     }
 
     if (account && yieldFarmingContract) {
-      filterByEvent(yieldFarmingContract, 'Staked', account).then((data: any) => {
-        setReadyToEarned(data.length > 0);
-      });
+      setTimeout(() => {
+        filterByEvent(yieldFarmingContract, 'Staked', account).then((data: any) => {
+          setReadyToEarned(data.length > 0);
+        });
+      }, 3000);
     }
   }, [nftId, account, yieldFarmingContract, readyToEarned]);
 
