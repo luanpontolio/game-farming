@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import BigNumber from 'bignumber.js';
 import {
   Box,
   Button,
@@ -29,7 +30,7 @@ const Main = () => {
   const [nftId, setNftId] = useState<string>('');
   const [nftData, setNftData] = useState<any>({});
   const [readyToEarned, setReadyToEarned] = useState<boolean>(false);
-  const [totalEarned, setTotalEarned] = useState<string>('')
+  const [totalEarned, setTotalEarned] = useState<string>('');
   const { state, dispatch } = useAppContext();
   const { account } = state;
   const { connect, disconnect } = useWallet(state, dispatch);
@@ -41,8 +42,8 @@ const Main = () => {
       return;
 
     try {
-      const tokenUri = await uri(stakeTokenContract, account, nftId);
-      const data = await fetch(tokenUri.replace("{id}.json", nftId));
+      const tokenUri = await uri(stakeTokenContract, account, Number(nftId));
+      const data = await fetch(tokenUri?.replace("{id}.json", nftId));
       const response = await data.json();
 
       setNftData(response);
@@ -54,8 +55,7 @@ const Main = () => {
   async function getTotalToEarn() {
     try {
       const totalEarned = await earned(yieldFarmingContract, account);
-
-      setTotalEarned(totalEarned.toString())
+      setTotalEarned(new BigNumber(totalEarned).dividedBy(10**18).toFixed(6))
     } catch (error: any) {
       console.log(error.message);
     }
@@ -84,19 +84,22 @@ const Main = () => {
       setNftData({});
     }
 
-    if (account && yieldFarmingContract) {
-      setTimeout(() => {
-        filterByEvent(yieldFarmingContract, 'Staked', account).then((data: any) => {
-          setReadyToEarned(data.length > 0);
-        });
-      }, 3000);
+    if (!readyToEarned && yieldFarmingContract) {
+      filterByEvent(yieldFarmingContract, 'Staked', account).then((data: any) => {
+        setReadyToEarned(data.length > 0);
+      });
     }
   }, [nftId, account, yieldFarmingContract, readyToEarned]);
 
   const GetRewards = () => (
     <Card>
-      <CardContent sx={{ display: 'flex', flexDirection: 'row', flex: '1 1' }}>
-        <Typography variant="caption">
+      <CardContent sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyItems: 'baseline',
+        flex: '1 100'
+      }}>
+        <Typography variant="caption" component="div">
           Earned: {totalEarned}
         </Typography>
         <Button size="small" color="secondary" onClick={getTotalToEarn}>
