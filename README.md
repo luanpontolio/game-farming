@@ -21,7 +21,7 @@ The project allows users to redeem rewards for each NFT item they put in the Poo
 
 #### Contracts Design
 
-- Pausable: Pausable: The contract pauses the rewards distribution by the owner(`RewardsDistribution`).
+- Pausable: The contract pauses the rewards distribution by the owner(`RewardsDistribution`).
 - RewardsDistributionRecipient: To add and verify a new RewardsDistribution.
 - YieldFarmingWithNFT: Primarily contract. Its initialization parameters have cared for `RewardsToken`, `StakeToken`, and `RewardsDistribution`. In its initialized state with the `RKN` distribution period of seven days(only the `RewardsDistribution` has the authority to change the period). If staked a new NFT in the contract, the `_totalSupply` receives `1 ether`(for each successful `stake`), and the user increases their balance for each NFT added.
 
@@ -40,19 +40,19 @@ The project allows users to redeem rewards for each NFT item they put in the Poo
 
 1. Open a new terminal window and run `git clone https://github.com/luanpontolio/game-farming && cd game-farming`
 2. run `yarn` to install backend dependencies
-3. run `npm run test:local` to run contract test suite to run smart contract test cases
-4. run `DEPLOY_PATH=scripts/deploy.ts npm run deploy:local` to compile and deploy the Game-Farming contracts to the ganache node
+3. run `yarn test` to run contract test suite to run smart contract test cases
+4. run `DEPLOY_PATH=scripts/deploy.ts yarn deploy:local` to compile and deploy the Game-Farming contracts to the ganache node
 5. cd to frontend `cd frontend`
 6. run `yarn` to install frontend dependencies
-7. run `npm run dev` to serve the app locally
+7. run `yarn dev` to serve the app locally
 
 ## Environment Setup
 
 #### Quickstart Setup
 
 - [ ] Install all dependencies
-- [ ] Deployed a local ethereum network with Ganache
-- [ ] Compliled and deployed smart contract to the blockchain
+- [ ] Deploy a local ethereum network with Ganache
+- [ ] Compile and deploy smart contract to the blockchain
 - [ ] Contract `artifact` and `typechain` is auto generated in the `frontend` folder
 
 #### Terminal Setup Checklist
@@ -75,11 +75,11 @@ The project allows users to redeem rewards for each NFT item they put in the Poo
 #### Deploying contracts in Local
 
 1. Ensure your local environment has been set up (ganache node, truffle console)
-2. Run `npm run test:local` to ensure all tests are passing (make sure you have the setup your local environment first)
+2. Run `yarn test` to ensure all tests are passing (make sure you have the setup your local environment first)
 3. Make sure your ganache is running and open `localhost:7545`
-4. If tests are passing running `DEPLOY_PATH=scripts/deploy.ts npm run deploy:local`
+4. If tests are passing running `DEPLOY_PATH=scripts/deploy.ts yarn deploy:local`
 5. The contracts addresses and the owner address will show up on terminal.
-6. Run the dApp: `cd frontend && npm run dev`
+6. Run the dApp: `cd frontend && yarn dev`
 7. Change your metamask network to `localhost`
 8. The Game-Farming dApp UI should load
 #### Resources
