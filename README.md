@@ -9,10 +9,27 @@
 
 </p>
 
+# About
+
+`Game-Farming` is a simple bounty project based on game items.
+
+The project allows users to redeem rewards for each NFT item they put in the Pool. When creating a new position, the `Staker` start to earn a project token(`RKN`). The image below shows us how this works:
+
+<p>
+    <img src="images/design.png" alt="Smart contracts design" width="800" height="400">
+</p>
+
+#### Contracts Design
+
+- Pausable: Pausable: The contract pauses the rewards distribution by the owner(`RewardsDistribution`).
+- RewardsDistributionRecipient: To add and verify a new RewardsDistribution.
+- YieldFarmingWithNFT: Primarily contract. Its initialization parameters have cared for `RewardsToken`, `StakeToken`, and `RewardsDistribution`. In its initialized state with the `RKN` distribution period of seven days(only the `RewardsDistribution` has the authority to change the period). If staked a new NFT in the contract, the `_totalSupply` receives `1 ether`(for each successful `stake`), and the user increases their balance for each NFT added.
+
+
 # Setup checklist
 
-[ ] Node 16.14.2
-[ ] Yarn 1.22.19
+- [ ] Node 16.14.2
+- [ ] Yarn 1.22.19
 # Metamask
 
 1. Be sure to have metamask plugin installed in your browser (recommended browser is Chrome)
