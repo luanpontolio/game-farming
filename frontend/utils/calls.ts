@@ -7,7 +7,7 @@ const { padRight, asciiToHex } = web3.utils;
 export const uri = async (
   contract: Contract,
   account: string,
-  tokenId: string
+  tokenId: number
 ) => {
   return contract.methods.uri(tokenId).call({ from: account });
 }

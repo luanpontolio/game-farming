@@ -13,7 +13,7 @@ let yieldFarmingContractLabelString: string = 'YieldFarmingWithNFT';
 let erc20ContractLabelString: string = 'RewardsToken';
 let erc1155ContractLabelString: string = 'StakeToken';
 
-let totalSupply = BigNumber.from(parseEther('1000')).toString();
+let totalSupply = BigNumber.from(parseEther('1000'));
 
 async function main() {
   const [_, rewardsDistributor] = await deployer();
@@ -34,7 +34,7 @@ async function main() {
   console.log(`Stake token address contract: ${StakeToken.address}`);
 
   // transfer RewardsToken for contract
-  const totalRewards = BigNumber.from(parseEther('100')).toString()
+  const totalRewards = BigNumber.from(parseEther('100'))
   await RewardsToken.approve(yieldFarming.address, totalRewards);
   await RewardsToken.transfer(yieldFarming.address, totalRewards);
   await yieldFarming.connect(rewardsDistributor).notifyRewardAmount(totalRewards);
