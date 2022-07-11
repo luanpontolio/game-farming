@@ -1,0 +1,14 @@
+name: Build and test on push
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Switch Node.js version
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.14.2
+      - name: Compile & test contracts
+        run: yarn && npm run compile && npm run test

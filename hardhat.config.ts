@@ -31,6 +31,28 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+const getNetworkConfig = (chainId: number) => {
+  if (!ALCHEMY_PROJECT_URL || !PRIVATE_KEY || !GAS_LIMIT || !GAS_PRICE) {
+    return {
+      url: 'please update .env file',
+    } as NetworkUserConfig;
+  }
+
+  return {
+    chainId,
+    url: ALCHEMY_PROJECT_URL,
+    accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
+    gas: Number(GAS_LIMIT),
+    gasPrice: Number(GAS_PRICE) * 1000000000, // gwei unit
+    timeout: 600 * 1000, // milliseconds
+    live: true,
+    saveDeployments: true,
+    throwOnCallFailures: true,
+    throwOnTransactionFailures: true,
+    loggingEnabled: true,
+  } as NetworkUserConfig;
+};
+
 const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.9',
@@ -51,30 +73,18 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
-    rinkeby: {
-      chainId: Number(CHAIN_ID),
-      url: ALCHEMY_PROJECT_URL,
-      accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
-      gas: Number(GAS_LIMIT),
-      gasPrice: Number(GAS_PRICE) * 10000, // gwei unit
-      timeout: 600 * 1000, // milliseconds
-      live: true,
-      saveDeployments: true,
-      throwOnCallFailures: true,
-      throwOnTransactionFailures: true,
-      loggingEnabled: true,
-    } as NetworkUserConfig,
+    rinkeby: getNetworkConfig(Number(CHAIN_ID)),
     hardhat: {
       chainId: 1337,
       accounts: {
         mnemonic: MNEMONIC_SEED,
       },
-    },
+    } as NetworkUserConfig,
     localhost: {
       chainId: 1337,
       url: 'http://127.0.0.1:7545',
       gasPrice: 5000000000,
-    },
+    } as NetworkUserConfig,
   },
 } as HardhatUserConfig;
 
