@@ -67,7 +67,6 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ERC1155Holder, Ree
       return rewardPerTokenStored;
     }
 
-
     return
       rewardPerTokenStored.add(
         lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(_totalSupply)

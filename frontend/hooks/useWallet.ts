@@ -19,7 +19,9 @@ export default (state: any, dispatch: any) => {
       const web3Provider = new Web3(provider);
 
       const accounts = await web3Provider.eth.getAccounts();
+      debugger;
       const network = await web3Provider.eth.getChainId();
+      debugger;
       dispatch(setProvider({
         provider,
         web3Provider,
@@ -54,7 +56,7 @@ export default (state: any, dispatch: any) => {
   }
   const switchNetwork = async () => {
     try {
-      const chainId= Number(process?.env?.CHAIN_ID)
+      const chainId= Number(process?.env?.CHAIN_ID || 1337)
       dispatch(setWrongNetwork(network !== chainId));
       await window?.ethereum?.request({
         method: 'wallet_switchEthereumChain',
