@@ -95,13 +95,13 @@ contract YieldFarmingWithNFT is RewardsDistributionRecipient, ERC1155Holder, Ree
   }
 
   function withdraw(uint256 tokenId, uint256 amount, bytes memory data) public nonReentrant updateReward(msg.sender) {
+    require(tokenOwners[tokenId] != address(0), "TokeId not staked");
     require(tokenOwners[tokenId] == address(msg.sender), "Invalid Owner");
     _totalSupply = _totalSupply - _one_ether;
     _balances[msg.sender] = _balances[msg.sender] - _one_ether;
 
     delete tokenOwners[tokenId];
-    stakingToken.setApprovalForAll(address(msg.sender), true);
-    stakingToken.safeTransferFrom(msg.sender, address(this), tokenId, amount, data);
+    stakingToken.safeTransferFrom(address(this), msg.sender, tokenId, amount, data);
 
     emit Withdrawn(msg.sender, tokenId);
   }
