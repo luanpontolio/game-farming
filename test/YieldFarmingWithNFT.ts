@@ -159,12 +159,10 @@ describe("YieldFarmingWithNFT", async function () {
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
       await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
       const initialStakeBal = await yieldFarming.balanceOf(owner.address);
-      expect(await checkStakeAndWithdrawEvent(yieldFarming, owner.address, 1, 'Staked')).to.be.true;
 
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
       await yieldFarming.stake(2, 1, ethers.utils.formatBytes32String(""));
       const postStakeBal = await yieldFarming.balanceOf(owner.address);
-      expect(await checkStakeAndWithdrawEvent(yieldFarming, owner.address, 2, 'Staked')).to.be.true;
 
       expect(postStakeBal.toString() > initialStakeBal.toString()).to.be.true;
     });
@@ -246,12 +244,16 @@ describe("YieldFarmingWithNFT", async function () {
 
   describe('withdraw', async function() {
     it('cannot withdraw if nothing stake', async function() {
-      expect(
+      try {
         await yieldFarming.withdraw(1, 1, ethers.utils.formatBytes32String(""))
-      ).to.match(/TokeId not staked/);
+      } catch(error: any) {
+        expect(
+          error.message
+        ).to.match(/TokeId not staked/);
+      }
     });
 
-    it.only('should increases NFT token balance and decreases staking balance', async () => {
+    it('should increases NFT token balance and decreases staking balance', async () => {
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
       await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
 
