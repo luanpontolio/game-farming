@@ -15,10 +15,10 @@ type NFTData = {
 };
 
 const data: any = {
-  one,
-  two,
-  three,
-  four
+  1: one,
+  2: two,
+  3: three,
+  4: four
 }
 
 export default function handler(

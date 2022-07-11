@@ -51,7 +51,7 @@ const Main = () => {
     }
   }
 
-  async function getEarned() {
+  async function getTotalToEarn() {
     try {
       const totalEarned = await earned(yieldFarmingContract, account);
 
@@ -79,6 +79,8 @@ const Main = () => {
   }
 
   useEffect(() => {
+    setReadyToEarned(!!account);
+
     if (!nftId || !account) {
       setNftId('');
       setNftData({});
@@ -86,17 +88,20 @@ const Main = () => {
 
     if (account && yieldFarmingContract) {
       filterByEvent(yieldFarmingContract, 'Staked', account).then((data: any) => {
-        setReadyToEarned(true);
+        setReadyToEarned(data.length > 0);
       });
     }
-  }, [nftId, account, yieldFarmingContract]);
+  }, [nftId, account, yieldFarmingContract, readyToEarned]);
 
   const GetRewards = () => (
     <Card>
-      <CardContent>
+      <CardContent sx={{ display: 'flex', flexDirection: 'row', flex: '1 1' }}>
         <Typography variant="caption">
           Earned: {totalEarned}
         </Typography>
+        <Button size="small" color="secondary" onClick={getTotalToEarn}>
+          Total to earn
+        </Button>
       </CardContent>
       <CardActions>
         <Button size="small" color="secondary" onClick={getRewards}>
@@ -208,10 +213,12 @@ const Main = () => {
         </Grid>
         <Grid item p={4}>
           {
-            readyToEarned && <GetRewards />
-          }
-          {
             nftData.image && <NFTDetails />
+          }
+        </Grid>
+        <Grid>
+          {
+            readyToEarned && <GetRewards />
           }
         </Grid>
       </Grid>
