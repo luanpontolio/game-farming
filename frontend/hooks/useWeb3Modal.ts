@@ -7,7 +7,6 @@ if (typeof window !== "undefined") {
   web3Modal = new Web3Modal({
     network: process.env.CHAIN_NETWORK,
     cacheProvider: true,
-    providerOptions,
   });
 }
 
@@ -19,7 +18,6 @@ const useWeb3Modal = () => {
       setWeb3Modal(new Web3Modal({
         network: process.env.CHAIN_NETWORK,
         cacheProvider: true,
-        providerOptions,
       }));
     }
   }, [modal])

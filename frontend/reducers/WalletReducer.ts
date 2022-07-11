@@ -58,7 +58,7 @@ export const setLoading = (loading: boolean) => ({
 export const setWrongNetwork = (wrongNetwork: boolean) => ({
  type: Types.SET_WRONG_NETWORK,
  wrongNetwork
-})
+});
 
 export function reducers(state: TState = initialState, action: TAction) {
   const {
