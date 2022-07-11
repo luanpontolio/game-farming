@@ -2,13 +2,14 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract } from 'ethers';
 import { expect } from 'chai';
 
-export const checkStakeEvent = async (
+export const checkStakeAndWithdrawEvent = async (
   contract: Contract,
   account: string,
   tokenId: number,
+  eventName: string,
 ): Promise<boolean> => {
   let stakeEvent = new Promise<any>((resolve, reject) => {
-    contract.on('Staked', (address, tokenId) => {
+    contract.on(eventName, (address, tokenId) => {
       resolve({
         address,
         tokenId,

@@ -9,7 +9,7 @@ import {
   deployToken,
   deployYieldFarming,
 } from "./utils/setup";
-import { checkStakeEvent } from "./utils/CheckEvents";
+import { checkStakeAndWithdrawEvent } from "./utils/CheckEvents";
 
 const fastForward = async (num: number) => {
   await ethers.provider.send("evm_increaseTime", [86400]);
@@ -122,7 +122,7 @@ describe("YieldFarmingWithNFT", async function () {
         ethers.utils.formatBytes32String("")
       );
 
-      expect(checkStakeEvent(yieldFarming, owner.address, tokenId));
+      expect(await checkStakeAndWithdrawEvent(yieldFarming, owner.address, tokenId, 'Staked')).to.be.true;
     });
   });
 
@@ -175,6 +175,7 @@ describe("YieldFarmingWithNFT", async function () {
 
       const totalSupplyAfter = await yieldFarming.totalSupply();
 
+      expect(await checkStakeAndWithdrawEvent(yieldFarming, owner.address, 1, 'Staked')).to.be.true;
       expect(totalSupplyAfter.toString() > totalSupplyBefore.toString()).to.be
         .true;
     });
@@ -238,6 +239,37 @@ describe("YieldFarmingWithNFT", async function () {
       expect(rewardRateInitial.toString() > ZERO).to.be.true;
       expect(rewardRateLater.toNumber() > rewardRateInitial.toNumber()).to.be
         .true;
+    });
+  });
+
+  describe('withdraw', async function() {
+    it('cannot withdraw if nothing stake', async function() {
+      try {
+        await yieldFarming.withdraw(1, 1, ethers.utils.formatBytes32String(""))
+      } catch(error: any) {
+        expect(
+          error.message
+        ).to.match(/TokeId not staked/);
+      }
+    });
+
+    it('should increases NFT token balance and decreases staking balance', async () => {
+      await stakingToken.setApprovalForAll(yieldFarming.address, true);
+      await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
+
+      const initialStakingTokenBal = await stakingToken.balanceOf(owner.address, 1);
+      const initialStakeBal = await yieldFarming.balanceOf(owner.address);
+
+      await yieldFarming.withdraw(1, 1, ethers.utils.formatBytes32String(""));
+
+      const postStakingTokenBal = await stakingToken.balanceOf(owner.address, 1);;
+      const postStakeBal = await yieldFarming.balanceOf(owner.address);
+
+      expect(
+        await checkStakeAndWithdrawEvent(yieldFarming, owner.address, 1, 'Withdrawn')
+      ).to.be.true;
+      expect(postStakeBal.toString() < initialStakeBal.toString()).to.be.true;
+      expect((initialStakingTokenBal.toString() / 10**18) === (postStakingTokenBal.toString() / 10**18)).to.be.true
     });
   });
 });
