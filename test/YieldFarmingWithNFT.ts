@@ -71,7 +71,7 @@ describe('YieldFarmingWithNFT', async function () {
     });
 
     it('should revert calling stake() when paused', async () => {
-			const tokenId = 0;
+			const tokenId = 1;
 			await stakingToken.setApprovalForAll(yieldFarming.address, true);
 
       expect(
@@ -88,7 +88,7 @@ describe('YieldFarmingWithNFT', async function () {
     it('should not revert calling stake() when unpaused', async () => {
 			await yieldFarming.setPaused(false);
 
-			const tokenId = 0;
+			const tokenId = 1;
 			await stakingToken.setApprovalForAll(yieldFarming.address, true);
 			await yieldFarming.stake(tokenId, 1, ethers.utils.formatBytes32String(""));
 
@@ -117,7 +117,7 @@ describe('YieldFarmingWithNFT', async function () {
       await yieldFarming.connect(accountOne).notifyRewardAmount(rewardValue);
 
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
-			await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
+			await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
 
       // Forward 1 day
 			await fastForward(86400);
@@ -128,18 +128,15 @@ describe('YieldFarmingWithNFT', async function () {
 	});
 
   describe('#stake', async function(){
-    it('should accept one item from account', async () => {
+    it('should increase the balance staked', async () => {
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
-      await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
+      await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
 			const initialStakeBal = await yieldFarming.balanceOf(owner.address);
-			const initialLpBal = await stakingToken.balanceOf(yieldFarming.address, 0);
 
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
-			await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
+			await yieldFarming.stake(2, 1, ethers.utils.formatBytes32String(""));
 			const postStakeBal = await yieldFarming.balanceOf(owner.address);
-			const postLpBal = await stakingToken.balanceOf(yieldFarming.address, 1);
 
-			expect(postLpBal.toString() == initialLpBal.toString()).to.be.true;
       expect(postStakeBal.toString() > initialStakeBal.toString()).to.be.true;
 		});
 
@@ -147,7 +144,7 @@ describe('YieldFarmingWithNFT', async function () {
 			const totalSupplyBefore = await yieldFarming.totalSupply();
 
       await stakingToken.setApprovalForAll(yieldFarming.address, true);
-			await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
+			await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
 
 			const totalSupplyAfter = await yieldFarming.totalSupply();
 
@@ -156,11 +153,11 @@ describe('YieldFarmingWithNFT', async function () {
 
 		it('cannot staked twice the same id', async () => {
 			await stakingToken.setApprovalForAll(yieldFarming.address, true);
-			await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
+			await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
 
       try {
         await stakingToken.setApprovalForAll(yieldFarming.address, true);
-			  await yieldFarming.stake(0, 1, ethers.utils.formatBytes32String(""));
+			  await yieldFarming.stake(1, 1, ethers.utils.formatBytes32String(""));
       } catch (error: any) {
         expect(error.message).to.match(/Not empty/);
       }
